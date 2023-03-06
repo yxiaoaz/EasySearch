@@ -45,6 +45,10 @@ public class StorageManager {
         target.put(key,l);
     }
 
+    public ArrayList<Posting> getPosting(HTree target, String key) throws IOException {
+        return (ArrayList<Posting>) target.get(key);
+    }
+
     // Delete the whole postings list of a given key (word/doc)
     public void delEntry(HTree target, String key) throws IOException{
         target.remove(key);
