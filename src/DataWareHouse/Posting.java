@@ -1,12 +1,19 @@
 package DataWareHouse;
 
-public class Posting {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Posting implements Serializable {
     protected String ID;
+
+    public Posting(String ID){
+        this.ID=ID;
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Posting){
-            return ID == ((Posting) obj).getID();
+            return ID.equals(((Posting) obj).getID());
         }
         return false;
     }
@@ -18,9 +25,16 @@ public class Posting {
 
 class PagePosting extends Posting{
 
+    public PagePosting(String ID) {
+        super(ID);
+    }
+
 }
 
 class TermPosting extends Posting{
 
+    public TermPosting(String ID) {
+        super(ID);
+    }
 }
 
