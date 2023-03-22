@@ -48,12 +48,47 @@ public class Indexer {
      @param url: where to fetch the terms from
      inverted index files grouped by first letter of the term
      * */
-    public ArrayList<String> indexTerms(URL url) throws IOException {
+    public void processContent(URL url) throws IOException {
         ArrayList<String> terms = extractTerms(url);
         for(int i=0;i< terms.size();i++){
             String t = terms.get(i);
-            
+            indexTerm(t,i,url);
         }
+    }
+
+    /**
+     * Index a Single Term (not mapped to ID)
+     * */
+    public void indexTerm(String term, int position, URL url) throws IOException {
+        HTree invertedIndex = fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile();
+        String termID = ID_Mapping.Term2ID(term);
+        String docID = ID_Mapping.URL2ID(url);
+
+        // acquire(construct new) corresponding posting list
+        ArrayList<IIPosting> postingList;
+        if(invertedIndex.get(termID)==null){
+            postingList = new ArrayList<>();
+
+            //to be included in a IIPosting: which document, where in the document
+            IIPosting newPosting = new IIPosting(docID);
+            newPosting.addPosition(position);
+            postingList.add(newPosting);
+        }
+        else{
+            postingList = (ArrayList<IIPosting>) invertedIndex.get(termID);
+            IIPosting oldPosting= new IIPosting(docID);;
+            for(int j = 0;j<postingList.size();j++){
+                if (postingList.get(j).getID().equals(docID)){
+                    oldPosting = postingList.get(j);
+                    break;
+                }
+            }
+
+            oldPosting.addPosition(position);
+            postingList.add(oldPosting);
+        }
+
+        invertedIndex.put(termID,postingList);
     }
 
 }

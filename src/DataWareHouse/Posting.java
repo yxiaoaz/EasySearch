@@ -30,22 +30,24 @@ public class Posting implements Serializable {
 class IIPosting extends Posting{
 
     // the position of terms in this document
-    private ArrayList<Integer> position;
+    private ArrayList<Integer> positions;
 
     /**ID: the id of the DOCUMENT
      * */
     public IIPosting(String ID) {
         super(ID);
-        position = new ArrayList<>();
+        positions = new ArrayList<>();
     }
 
+    public void addPosition(int position){
+        positions.add(position);
 
-
+    }
 }
 
-class TermPosting extends Posting{
+class FIPosting extends Posting{
 
-    public TermPosting(String ID) {
+    public FIPosting(String ID) {
         super(ID);
     }
 }

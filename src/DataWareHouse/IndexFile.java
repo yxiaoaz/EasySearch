@@ -21,7 +21,9 @@ public class IndexFile {
         this.recman = RecordManagerFactory.createRecordManager(name);
         file = HTree.createInstance(recman);
         recman.setNamedObject( name, file.getRecid());
+
         this.fileManager = fileManager;
+        fileManager.addIndexFile(name,this);
     }
     public String getName(){
         return name;
