@@ -23,11 +23,23 @@ public class Posting implements Serializable {
     }
 }
 
-class PagePosting extends Posting{
+/**
+ * Term ID-> ArrayList<IIPosting>
+ *
+ * */
+class IIPosting extends Posting{
 
-    public PagePosting(String ID) {
+    // the position of terms in this document
+    private ArrayList<Integer> position;
+
+    /**ID: the id of the DOCUMENT
+     * */
+    public IIPosting(String ID) {
         super(ID);
+        position = new ArrayList<>();
     }
+
+
 
 }
 

@@ -1,8 +1,9 @@
 package Spider;
+import DataWareHouse.FileManager;
 import DataWareHouse.Indexer;
-import DataWareHouse.IndexDatabase;
 import org.htmlparser.beans.LinkBean;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
@@ -19,18 +20,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CrawlingEvent {
     static AbstractQueue<URL> unfetchedURL;
     static ConcurrentHashMap.KeySetView<URL,Boolean> fetchedURL;
-    private IndexDatabase database;
-    public CrawlingEvent(ArrayList<URL> root, IndexDatabase savingLocation){
+    private FileManager fileManager;
+    public CrawlingEvent(ArrayList<URL> root, FileManager savingLocation){
         unfetchedURL = new ConcurrentLinkedQueue<URL>();
         unfetchedURL.addAll(root);
         fetchedURL = ConcurrentHashMap.newKeySet();
-        database = savingLocation;
+        fileManager = savingLocation;
     }
 
     private class Crawler implements Runnable{
         Indexer indexer;
-        public Crawler(){
-            indexer = new Indexer(database);
+        public Crawler() throws IOException {
+            indexer = new Indexer(fileManager);
         }
         public void run(){
             while(!unfetchedURL.isEmpty()){
@@ -51,6 +52,7 @@ public class CrawlingEvent {
                 /**
                  * TODO: crawl text and other information from url
                  * */
+
             }
         }
 
