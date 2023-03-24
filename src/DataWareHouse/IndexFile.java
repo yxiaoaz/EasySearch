@@ -23,7 +23,12 @@ public class IndexFile {
         recman.setNamedObject( name, file.getRecid());
 
         this.fileManager = fileManager;
-        fileManager.addIndexFile(name,this);
+    }
+    public void saveChanges() throws IOException {
+        recman.commit();
+    }
+    public void close() throws IOException {
+        recman.close();
     }
     public String getName(){
         return name;
