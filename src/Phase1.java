@@ -4,18 +4,16 @@ import jdbm.helper.FastIterator;
 import jdbm.htree.HTree;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import java.lang.Math;
 
-public class Engine {
-    FileManager manager;
-    public Engine(){
+public class Phase1 {
+    public FileManager manager;
+    public Phase1(){
         manager = new FileManager();
-
     }
     public  void printInfo(DocProfile docprofile) throws IOException {
         URL url = new URL(docprofile.getURLinString());
@@ -40,45 +38,41 @@ public class Engine {
         System.out.println("-----------------------------------------------------");
 
     }
-    public void Phase1(){
-
+    public static void main(String[] args){
+        Phase1 e = new Phase1();
         try {
             /**
              * For simplicity, in this phase there is only one document for each type of file
              * */
-            manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
-            manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
-            manager.createIndexFile(FileNameGenerator.DOCRECORDS);
-            manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
-            manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);
+            e.manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
+            e.manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
+            e.manager.createIndexFile(FileNameGenerator.DOCRECORDS);
+            e.manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
+            e.manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);
 
             ArrayList<URL> root = new ArrayList<>();
             root.add(new URL("http://www.cse.ust.hk"));
-            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(30));
+            CrawlingEvent phase1 = new CrawlingEvent(root,e.manager,1,new AtomicInteger(30));
             phase1.Start();
-            for(IndexFile f:manager.getAllIndexFiles()){
+            for(IndexFile f:e.manager.getAllIndexFiles()){
                 f.saveChanges();
             }
 
-            HTree docrecord = manager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
+            HTree docrecord = e.manager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
             FastIterator docrecorditerator = docrecord.values();
             int count = 1;
             DocProfile element = (DocProfile) docrecorditerator.next();
             while(count<30 || element!=null){
-                printInfo(element);
+                e.printInfo(element);
                 element = (DocProfile) docrecorditerator.next();
                 count++;
             }
-            for(IndexFile f:manager.getAllIndexFiles()){
+            for(IndexFile f:e.manager.getAllIndexFiles()){
                 f.saveChanges();
                 f.close();
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException x) {
+            throw new RuntimeException(x);
         }
-    }
-    public static void main(String[] args){
-        Engine e = new Engine();
-        e.Phase1();
     }
 }

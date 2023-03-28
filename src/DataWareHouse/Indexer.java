@@ -74,7 +74,7 @@ public class Indexer {
         StringTokenizer st = new StringTokenizer(text);
         while (st.hasMoreTokens()) {
             String t = st.nextToken();
-            if(!stopStem.isStopWord(t))
+            if(!stopStem.isStopWord(t.toLowerCase())&&!stopStem.stem(t).isBlank())
                 res.add(stopStem.stem(t));
         }
         return res;
