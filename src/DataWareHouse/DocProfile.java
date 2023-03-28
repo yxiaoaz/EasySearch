@@ -3,6 +3,7 @@ package DataWareHouse;
 import DataWareHouse.ID_Mapping;
 import DataWareHouse.Posting;
 
+import java.net.MalformedURLException;
 import java.util.Date;
 
 public class DocProfile extends Posting {
@@ -33,7 +34,11 @@ public class DocProfile extends Posting {
         return title;
     }
 
-    public String getURLinString() {
+    public String getURLinString() throws MalformedURLException {
         return ID_Mapping.PageID2URL(ID).toString();
+    }
+
+    public int getSize(){
+        return this.size;
     }
 }

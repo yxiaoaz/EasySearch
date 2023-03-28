@@ -5,7 +5,7 @@ import DataWareHouse.Posting;
 /**
  * Record the occurence of A term in A doc
  * */
-public class FIPosting extends Posting {
+public class FIPosting extends Posting implements Comparable<FIPosting> {
     private int occurence;
     public FIPosting(String ID) {
         super(ID);
@@ -19,4 +19,7 @@ public class FIPosting extends Posting {
         return occurence;
     }
 
+    public int compareTo(FIPosting b){
+        return b.getOccurence()-this.occurence;
+    }
 }

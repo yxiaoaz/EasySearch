@@ -1,7 +1,6 @@
 package Spider;
 import DataWareHouse.FileManager;
 import DataWareHouse.Indexer;
-import org.htmlparser.beans.LinkBean;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
@@ -63,26 +62,21 @@ public class CrawlingEvent {
         public void run(){
             while(!unfetchedURL.isEmpty() && maxPageToCrawl.get()>0){
                 URL url = unfetchedURL.poll();
-                System.out.println("Current URL: "+url.toString());
+                //System.out.println("Current URL: "+url.toString());
                 try {
                     if(indexer.validURL(url)){
-                        ArrayList<URL> URL_array = null;
-                        try{
-                            URL_array = indexer.extractLinks(url);
-                            for(URL u:URL_array){
-                                if(fetchedURL.add(u)){
-                                    unfetchedURL.add(u);
-                                }
+                        ArrayList<URL> URL_array =  indexer.extractLinks(url);
+                        for(URL u:URL_array){
+                            if(fetchedURL.add(u)){
+                                unfetchedURL.add(u);
                             }
-                            indexer.processContent(url);
-                            maxPageToCrawl.decrementAndGet();
                         }
-                        catch(SSLHandshakeException e){continue;}
+                        indexer.processContent(url);
+                        maxPageToCrawl.decrementAndGet();
 
                     }
                 } catch (IOException e) {
-                    System.out.println("validURL has bug");
-                    throw new RuntimeException(e);
+                    continue;
                 }
 
 

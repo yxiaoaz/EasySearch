@@ -2,7 +2,6 @@ package DataWareHouse;
 import IRUtilities.StopStem;
 import org.jsoup.Jsoup;
 import jdbm.htree.HTree;
-import org.htmlparser.beans.StringBean;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -13,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.StringTokenizer;
 
@@ -27,7 +27,7 @@ public class Indexer {
     public Indexer(FileManager fileManager) throws IOException {
         this.fileManager = fileManager;
         if(stopStem == null)
-            stopStem = new StopStem("stopwords.txt");
+            stopStem = new StopStem("src/IRUtilities/stopwords.txt");
     }
 
     /**
@@ -40,11 +40,13 @@ public class Indexer {
         // When we reach this stage, the URL is already valid to record
         String docID = ID_Mapping.URL2ID(url);
         HTree docRecords = fileManager.getIndexFile(FileNameGenerator.getDocRecordsName(url)).getFile();
-        Date lastModified = url.openConnection().getLastModified()==0?
-                new Date(url.openConnection().getLastModified())
+        Date lastModified = url.openConnection().getLastModified()!=0
+                ?new Date(url.openConnection().getLastModified())
                 :new Date(url.openConnection().getDate());
         String title = Jsoup.connect(url.toString()).get().title();
-        int size = Jsoup.connect(url.toString()).get().body().text().length();
+        int size = url.openConnection().getContentLength()!=-1
+                ?url.openConnection().getContentLength()
+                :Jsoup.connect(url.toString()).get().body().text().length();
 
         DocProfile profile = new DocProfile(ID_Mapping.URL2ID(url),lastModified,title,size);
         docRecords.put(docID,profile);
@@ -84,7 +86,7 @@ public class Indexer {
      * Task:
      *
      * */
-    public ArrayList<URL> extractLinks(URL url) throws IOException {
+    public ArrayList<URL> extractLinks(URL url) throws IOException  {
         ArrayList<URL> v_link = new ArrayList<URL>();
         //Get Document object after parsing the html from given url.
         Document document = Jsoup.connect(url.toString()).get();
@@ -151,7 +153,7 @@ public class Indexer {
 
             //the last modified date of this page
             // if ==0, use the "date" field instead
-            Date lastModified = url.openConnection().getLastModified()==0?
+            Date lastModified = url.openConnection().getLastModified()!=0?
                     new Date(url.openConnection().getLastModified())
                     :new Date(url.openConnection().getDate());
             if(!lastModified.after(recordedModifiedDate))
@@ -180,16 +182,18 @@ public class Indexer {
         }
         else{
             postingList = (ArrayList<IIPosting>) invertedIndex.get(termID);
-            IIPosting oldPosting= new IIPosting(docID);;
+            boolean foundDoc = false;
             for(int j = 0;j<postingList.size();j++){
                 if (postingList.get(j).getID().equals(docID)){
-                    oldPosting = postingList.get(j);
+                    postingList.get(j).addPosition(position);
+                    foundDoc = true;
                     break;
                 }
             }
-
-            oldPosting.addPosition(position);
-            postingList.add(oldPosting);
+            if(!foundDoc){
+                IIPosting newPosting = new IIPosting(docID);
+                newPosting.addPosition(position);
+            }
         }
 
         invertedIndex.put(termID,postingList);
@@ -213,17 +217,21 @@ public class Indexer {
         }
         else{//URL already has key in forward index
             postingList = (ArrayList<FIPosting>) forwardIndex.get(docID);
-            FIPosting oldPosting= new FIPosting(termID);;
+            boolean foundTerm=false;
             for(int j = 0;j<postingList.size();j++){
                 if (postingList.get(j).getID().equals(termID)){
-                    oldPosting = postingList.get(j);
+                    postingList.get(j).addOccurence();
+                    foundTerm=true;
                     break;
                 }
             }
-
-            oldPosting.addOccurence();
-            postingList.add(oldPosting);
+            if(!foundTerm){
+                FIPosting newPosting = new FIPosting(termID);
+                newPosting.addOccurence();
+                postingList.add(newPosting);
+            }
         }
+        Collections.sort(postingList);
         forwardIndex.put(docID,postingList);
 
     }

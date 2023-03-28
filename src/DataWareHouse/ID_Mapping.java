@@ -1,5 +1,6 @@
 package DataWareHouse;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 
@@ -8,17 +9,17 @@ public class ID_Mapping {
         String encodedURL = Base64.getUrlEncoder().encodeToString(url.toString().getBytes());
         return encodedURL;
     }
-    public static String PageID2URL(String ID){
+    public static URL PageID2URL(String ID) throws MalformedURLException {
         byte[] actualByte = Base64.getUrlDecoder().decode(ID);
-        String actualURLString = new String(actualByte);
-        return actualURLString;
+        URL actualURL = new URL(new String(actualByte));
+        return actualURL;
     }
     public static String Term2ID(String term){
         //TODO
-        return "";
+        return Base64.getEncoder().encodeToString(term.getBytes());
     }
     public static String TermID2Term(String ID){
         //TODO
-        return "";
+        return new String(Base64.getDecoder().decode(ID));
     }
 }
