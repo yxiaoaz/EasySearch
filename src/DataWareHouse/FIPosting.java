@@ -6,20 +6,20 @@ import DataWareHouse.Posting;
  * Record the occurence of A term in A doc
  * */
 public class FIPosting extends Posting implements Comparable<FIPosting> {
-    private int occurence;
+    private int numOfOccurence;
     public FIPosting(String ID) {
         super(ID);
-        occurence=0;
+        numOfOccurence=0;
     }
 
     public void addOccurence(){
-        occurence++;
+        numOfOccurence++;
     }
     public int getOccurence(){
-        return occurence;
+        return numOfOccurence;
     }
 
     public int compareTo(FIPosting b){
-        return b.getOccurence()-this.occurence;
+        return b.getOccurence()-this.numOfOccurence;
     }
 }

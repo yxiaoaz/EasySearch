@@ -21,9 +21,7 @@ public class Indexer {
     private FileManager fileManager;
     private static StopStem stopStem;
 
-    /**
-     * Code of Conduct: Create FileManager-> affiliate indexer to FileManager
-     * */
+
     public Indexer(FileManager fileManager) throws IOException {
         this.fileManager = fileManager;
         if(stopStem == null)
@@ -33,7 +31,6 @@ public class Indexer {
     /**
      * The driving method of the whole processing action
      @param url: where to fetch all the info from
-     inverted index files grouped by first letter of the term
       * */
     public void processContent(URL url) throws IOException {
         /**Step 1: save the URL to the docRecords*/
@@ -64,6 +61,7 @@ public class Indexer {
     }
 
     /**
+     * @param url: the link from which terms are extracted
      * @return a list of stemmed terms extracted from the url
      * */
     public ArrayList<String> extractTerms(URL url) throws IOException {
@@ -80,11 +78,9 @@ public class Indexer {
         return res;
     }
 
-    /**
+    /** Extract all child links of a given url
      * @param url : the link from which child links are extracted
-     *
-     * Task:
-     *
+     * @return : the child links of the input url
      * */
     public ArrayList<URL> extractLinks(URL url) throws IOException  {
         ArrayList<URL> v_link = new ArrayList<URL>();
@@ -108,6 +104,10 @@ public class Indexer {
         return v_link;
     }
 
+    /**Update the parent-child link relation graph (in the Web Graph File)
+     * @param parent : the parent link
+     * @param child : the child link
+     * */
     public void updateLinkGraph(URL parent, URL child) throws IOException {
         HTree parent2child = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_parent2child(parent)).getFile();
         HTree child2parent = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_child2parent(child)).getFile();
@@ -144,7 +144,10 @@ public class Indexer {
 
     }
 
-
+    /**Test if a URL is valid for fetching: either it is not recorded, or it is recorded but has a new lastModifiedDate
+     * @param url: the target URL
+     * @return : true if url is good to process, false otherwise
+     * */
     public boolean validURL(URL url) throws IOException {
         HTree docRecords = fileManager.getIndexFile(FileNameGenerator.getDocRecordsName(url)).getFile();
         if(docRecords.get(ID_Mapping.URL2ID(url))!=null){
@@ -162,8 +165,9 @@ public class Indexer {
         return true;
     }
 
-    /**
-     * Index a Single Term (not mapped to ID)
+    /**Index a Single Term
+     * @param term: the term to index
+     * @param url: the page that the input term appears in
      * */
     public void indexTerm(String term, int position, URL url) throws IOException {
         HTree invertedIndex = fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile();
