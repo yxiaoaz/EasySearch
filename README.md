@@ -1,4 +1,4 @@
-# An Individual Built Search Engine (In Progress)
+# My Search Engine built with Java (In Progress)
 
 Please check [here](https://drive.google.com/file/d/1Zlxn_YCOOWqQxtyLCbNelaaYJoCOIfuD/view?usp=sharing) for the progress report by March 2023.
 
