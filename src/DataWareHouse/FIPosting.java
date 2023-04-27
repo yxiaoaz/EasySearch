@@ -3,10 +3,11 @@ package DataWareHouse;
 import DataWareHouse.Posting;
 
 /**
- * Record the occurence of A term in A doc
+ Doc -> Term
  * */
 public class FIPosting extends Posting implements Comparable<FIPosting> {
     private int numOfOccurence;
+    /**The ID of the term*/
     public FIPosting(String ID) {
         super(ID);
         numOfOccurence=0;
