@@ -183,6 +183,8 @@ public class Indexer {
             IIPosting newPosting = new IIPosting(docID);
             newPosting.addPosition(position);
             postingList.add(newPosting);
+
+            fileManager.numTermAddOne();
         }
         else{
             postingList = (ArrayList<IIPosting>) invertedIndex.get(termID);
@@ -218,6 +220,7 @@ public class Indexer {
             FIPosting newPosting = new FIPosting(termID);
             newPosting.addOccurence();
             postingList.add(newPosting);
+            fileManager.numDocAddOne();
         }
         else{//URL already has key in forward index
             postingList = (ArrayList<FIPosting>) forwardIndex.get(docID);

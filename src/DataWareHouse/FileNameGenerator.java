@@ -1,5 +1,6 @@
 package DataWareHouse;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 public class FileNameGenerator {
@@ -11,7 +12,6 @@ public class FileNameGenerator {
     public static final String DOCRECORDS = "Web Page Profile-";
 
     public static String getInvertedIndexFileName(String term){
-
         //return INVERTEDINDEX+term.charAt(0);
         return INVERTEDINDEX;
     }
@@ -19,7 +19,9 @@ public class FileNameGenerator {
     public static String getForwardIndexFileName(URL url){
         return FORWARDINDEX;
     }
-
+    public static String getForwardIndexFileName(String urlID) throws MalformedURLException {
+        return getForwardIndexFileName(ID_Mapping.PageID2URL(urlID));
+    }
     public static String getWebGraphName_parent2child(URL url){
 
         //return PARENT2CHILD+url.getHost();
@@ -35,4 +37,7 @@ public class FileNameGenerator {
         return DOCRECORDS;
     }
 
+    public static String getDocRecordsName(String urlID) throws MalformedURLException{
+        return getDocRecordsName(ID_Mapping.PageID2URL(urlID));
+    }
 }

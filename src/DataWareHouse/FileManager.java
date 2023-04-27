@@ -3,12 +3,19 @@ package DataWareHouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FileManager {
     private HashMap<String, IndexFile> fileRecords;
+    private AtomicInteger numOfDoc=new AtomicInteger();
+    private AtomicInteger numOfTerm=new AtomicInteger();
     public FileManager(){
         fileRecords = new HashMap<>();
     }
+    public int getNumOfDoc(){return numOfDoc.get();}
+    public int getNumOfTerm(){return numOfTerm.get();}
+    public void numDocAddOne(){numOfDoc.set(numOfDoc.get());}
+    public void numTermAddOne(){numOfTerm.set(numOfTerm.get());}
     public void createIndexFile(String name) throws IOException {
         IndexFile newFile = new IndexFile(name,this);
         addIndexFile(name,newFile);
