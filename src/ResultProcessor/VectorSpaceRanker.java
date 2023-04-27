@@ -6,21 +6,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class VectorSpaceCalculator {
+public class VectorSpaceRanker {
     private FileManager fileManager;
+
+
+    public VectorSpaceRanker(FileManager manager){fileManager=manager;}
 
     /** Return {docID: similarity score} given a query
      * @param query : the query received
      */
-    private HashMap<String, Double> run(ArrayList<String> query) throws IOException {
+    public HashMap<String, Double> rank(ArrayList<String> query) throws IOException {
         HashMap<String, Double> result = new HashMap<>();
         /**Obtain all docs that contain terms in query*/
         for(String term:query){
             HTree invertedIndex = fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile();
             String termID = ID_Mapping.Term2ID(term);
-            ArrayList<IIPosting> docList = (ArrayList<IIPosting>) invertedIndex.get(termID);
 
-            if(docList==null) continue;
+            if(invertedIndex.get(termID)==null) continue;
+            ArrayList<IIPosting> docList = (ArrayList<IIPosting>)invertedIndex.get(termID);
             for(IIPosting doc:docList){
                 result.put(doc.getID(),0.0);
             }
@@ -30,6 +33,7 @@ public class VectorSpaceCalculator {
         for(String docID: result.keySet()){
             result.put(docID,cosineSim(query,docID));
         }
+
 
         return result;
     }

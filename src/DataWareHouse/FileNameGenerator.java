@@ -27,11 +27,19 @@ public class FileNameGenerator {
         //return PARENT2CHILD+url.getHost();
         return PARENT2CHILD;
     }
+    public static String getWebGraphName_parent2child(String docID) throws MalformedURLException {
 
+        //return PARENT2CHILD+url.getHost();
+        return getWebGraphName_parent2child(ID_Mapping.PageID2URL(docID));
+    }
     public static String getWebGraphName_child2parent(URL url){
         //return CHILD2PARENT+url.getHost();
         return CHILD2PARENT;
     }
+    public static String getWebGraphName_child2parent(String docID) throws MalformedURLException {
+        return getWebGraphName_child2parent(ID_Mapping.PageID2URL(docID));
+    }
+
     public static String getDocRecordsName(URL url){
         //return DOCRECORDS+url.getHost();
         return DOCRECORDS;
