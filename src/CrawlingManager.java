@@ -64,11 +64,11 @@ public class CrawlingManager {
             /**
              * For simplicity, in this phase there is only one document for each type of file
              * */
-            manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
+            /***manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
             manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
             manager.createIndexFile(FileNameGenerator.DOCRECORDS);
             manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
-            manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);
+            manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);*/
 
             ArrayList<URL> root = new ArrayList<>();
             root.add(new URL("http://www.cse.ust.hk"));

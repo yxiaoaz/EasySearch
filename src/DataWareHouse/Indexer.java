@@ -109,8 +109,16 @@ public class Indexer {
      * @param child : the child link
      * */
     public void updateLinkGraph(URL parent, URL child) throws IOException {
-        HTree parent2child = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_parent2child(parent)).getFile();
-        HTree child2parent = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_child2parent(child)).getFile();
+        //create file on demand
+        String supposedParent2ChildGraphName = FileNameGenerator.getWebGraphName_parent2child(parent);
+        String supposedChild2ParentGraphName = FileNameGenerator.getWebGraphName_child2parent(child);
+        if(!fileManager.fileExists(supposedParent2ChildGraphName))
+            fileManager.createIndexFile(supposedParent2ChildGraphName);
+        if(!fileManager.fileExists(supposedChild2ParentGraphName))
+            fileManager.createIndexFile(supposedChild2ParentGraphName);
+
+        HTree parent2child = fileManager.getIndexFile(supposedParent2ChildGraphName).getFile();
+        HTree child2parent = fileManager.getIndexFile(supposedChild2ParentGraphName).getFile();
         String parentID = ID_Mapping.URL2ID(parent);
         String childID = ID_Mapping.URL2ID(child);
 
@@ -146,7 +154,11 @@ public class Indexer {
      * @return : true if url is good to process, false otherwise
      * */
     public boolean validURL(URL url) throws IOException {
-        HTree docRecords = fileManager.getIndexFile(FileNameGenerator.getDocRecordsName(url)).getFile();
+        String supposedFileName = FileNameGenerator.getDocRecordsName(url);
+        if(fileManager.fileExists(supposedFileName)==false)
+            fileManager.createIndexFile(supposedFileName);
+
+        HTree docRecords = fileManager.getIndexFile(supposedFileName).getFile();
         if(docRecords.get(ID_Mapping.URL2ID(url))!=null){
             DocProfile docProfile = (DocProfile) docRecords.get(ID_Mapping.URL2ID(url));
             Date recordedModifiedDate = docProfile.getLastModified();
