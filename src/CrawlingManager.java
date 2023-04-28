@@ -91,7 +91,6 @@ public class CrawlingManager {
             }
             for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();
-                f.close();
             }
         } catch (IOException x) {
             throw new RuntimeException(x);
