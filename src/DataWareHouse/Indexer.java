@@ -139,9 +139,6 @@ public class Indexer {
                 parentList.add(parentID);
         }
         child2parent.put(childID,parentList);
-
-
-
     }
 
     /**Test if a URL is valid for fetching: either it is not recorded, or it is recorded but has a new lastModifiedDate
@@ -170,7 +167,10 @@ public class Indexer {
      * @param url: the page that the input term appears in
      * */
     public void indexTerm(String term, int position, URL url) throws IOException {
-        HTree invertedIndex = fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile();
+        String supposedFileName = FileNameGenerator.getInvertedIndexFileName(term);
+        if(!fileManager.fileExists(supposedFileName))
+            fileManager.createIndexFile(supposedFileName);
+        HTree invertedIndex = fileManager.getIndexFile(supposedFileName).getFile();
         String termID = ID_Mapping.Term2ID(term);
         String docID = ID_Mapping.URL2ID(url);
 
@@ -210,7 +210,10 @@ public class Indexer {
      * @param term : the occurence of term in the url to update
      * */
     public void indexDoc(String term, URL url) throws IOException {
-        HTree forwardIndex = fileManager.getIndexFile(FileNameGenerator.getForwardIndexFileName(url)).getFile();
+        String supposedFileName = FileNameGenerator.getForwardIndexFileName(url);
+        if(!fileManager.fileExists(supposedFileName))
+            fileManager.createIndexFile(supposedFileName);
+        HTree forwardIndex = fileManager.getIndexFile(supposedFileName).getFile();
         String termID = ID_Mapping.Term2ID(term);
         String docID = ID_Mapping.URL2ID(url);
 

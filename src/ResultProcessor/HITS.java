@@ -54,7 +54,7 @@ public class HITS {
                 authSum+=Authority.get(docID);
             }
             for (String docID: subgraph){
-                Authority.put(docID,Authority.get(docID)/authSum);
+                Authority.put(docID,Authority.get(docID)/authSum); //normalize
                 oldHubSum+=Hub.get(docID);
                 updateHub(docID);
                 hubSum+=Hub.get(docID);

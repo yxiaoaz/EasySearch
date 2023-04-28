@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import java.lang.Math;
 
-public class Phase1 {
+public class CrawlingManager {
     public FileManager manager;
-    public Phase1(){
-        manager = new FileManager();
+    public CrawlingManager(FileManager manager){
+       this.manager = manager;
     }
     public  void printInfo(DocProfile docprofile,FileWriter file) throws IOException {
         URL url = new URL(docprofile.getURLinString());
@@ -59,38 +59,37 @@ public class Phase1 {
         file.write(System.getProperty("line.separator"));
 
     }
-    public static void main(String[] args){
-        Phase1 e = new Phase1();
+    public void crawlOnce(){
         try {
             /**
              * For simplicity, in this phase there is only one document for each type of file
              * */
-            e.manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
-            e.manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
-            e.manager.createIndexFile(FileNameGenerator.DOCRECORDS);
-            e.manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
-            e.manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);
+            manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
+            manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
+            manager.createIndexFile(FileNameGenerator.DOCRECORDS);
+            manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
+            manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);
 
             ArrayList<URL> root = new ArrayList<>();
             root.add(new URL("http://www.cse.ust.hk"));
-            CrawlingEvent phase1 = new CrawlingEvent(root,e.manager,1,new AtomicInteger(30));
+            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(30));
             phase1.Start();
-            for(IndexFile f:e.manager.getAllIndexFiles()){
+            for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();
             }
 
-            HTree docrecord = e.manager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
+            HTree docrecord = manager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
             FastIterator docrecorditerator = docrecord.values();
             int count = 1;
             DocProfile element = (DocProfile) docrecorditerator.next();
 
             FileWriter file = new FileWriter("spider_result.txt");
             while(count<30 || element!=null){
-                e.printInfo(element,file);
+                printInfo(element,file);
                 element = (DocProfile) docrecorditerator.next();
                 count++;
             }
-            for(IndexFile f:e.manager.getAllIndexFiles()){
+            for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();
                 f.close();
             }

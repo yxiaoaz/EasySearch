@@ -23,6 +23,9 @@ public class FileManager {
     public IndexFile getIndexFile(String fileName){
         return fileRecords.get(fileName);
     }
+    public boolean fileExists(String filename){
+        return fileRecords.containsKey(filename);
+    }
     public ArrayList<IndexFile> getAllIndexFiles(){
         ArrayList<IndexFile> res = new ArrayList<IndexFile>(fileRecords.values());
         return res;
