@@ -19,19 +19,24 @@ public class VectorSpaceRanker {
         HashMap<String, Double> result = new HashMap<>();
         /**Obtain all docs that contain terms in query*/
         for(String term:query){
+            System.out.println("----Searching for occurence of "+term);
             HTree invertedIndex = fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile();
             String termID = ID_Mapping.Term2ID(term);
 
-            if(invertedIndex.get(termID)==null) continue;
+            if(invertedIndex.get(termID)==null) {System.out.println("This term is not recored");continue;}
+
             ArrayList<IIPosting> docList = (ArrayList<IIPosting>)invertedIndex.get(termID);
             for(IIPosting doc:docList){
+                System.out.println("--------Contained in this url: "+ID_Mapping.PageID2URL(doc.getID()));
                 result.put(doc.getID(),0.0);
             }
         }
 
         /**for each doc, calculate similarity with query*/
+        System.out.println("There are "+ result.keySet().size() + " URLs in ranking");
         for(String docID: result.keySet()){
             result.put(docID,cosineSim(query,docID));
+            System.out.println("Doc: "+ID_Mapping.PageID2URL(docID)+" Cosine Sim: "+cosineSim(query,docID));
         }
 
 

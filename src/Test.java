@@ -2,15 +2,13 @@ import DataWareHouse.FileManager;
 import DataWareHouse.FileNameGenerator;
 import DataWareHouse.ID_Mapping;
 import IRUtilities.StopStem;
+import ResultProcessor.HITS;
 import ResultProcessor.VectorSpaceRanker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Test {
     public static ArrayList<String> processQuery(ArrayList<String> query){
@@ -57,21 +55,39 @@ public class Test {
         FileManager manager = new FileManager();
         manager.createIndexFile(FileNameGenerator.DOCRECORDS);
         CrawlingManager cm = new CrawlingManager(manager);
-        //cm.crawlOnce();
+        long startTime = System.nanoTime();
+        cm.crawlOnce();
+        long endTime = System.nanoTime();
+        System.out.println("Crawling took "+((endTime-startTime)/1000000000)+" seconds");
+        while(true){
+            System.out.println("Please input query");
+            String[] querylist = new BufferedReader(new InputStreamReader(System.in)).readLine().split(" ");//{"research","graduate","HKUST","science","education"};
+            ArrayList<String> query = splitQuery(querylist);
+            //for(String s:query){System.out.println(s);}
+            System.out.println("Starts searching");
+            VectorSpaceRanker vectorSpaceRanker = new VectorSpaceRanker(manager);
+            query = processQuery(query);
 
-        String[] querylist = new BufferedReader(new InputStreamReader(System.in)).readLine().split(" ");//{"research","graduate","HKUST","science","education"};
-        ArrayList<String> query = splitQuery(querylist);
-        for(String s:query){System.out.println(s);}
-        VectorSpaceRanker vectorSpaceRanker = new VectorSpaceRanker(manager);
-        query = processQuery(query);
 
+            HashMap<String,Double> term_based_result = vectorSpaceRanker.rank(query);
+            ArrayList<String> term_based_result_rank = new ArrayList<>(term_based_result.keySet());
+            term_based_result_rank.sort(Comparator.comparing(term_based_result::get));
+            Collections.reverse(term_based_result_rank);
+            for(String docID:term_based_result_rank){
+                System.out.print(ID_Mapping.PageID2URL(docID));
+                System.out.println("    ->Cosine Similarity: "+term_based_result.get(docID));
+            }
 
-        HashMap<String,Double> term_based_result = vectorSpaceRanker.rank(query);
-        ArrayList<String> term_based_result_rank = new ArrayList<>(term_based_result.keySet());
-        term_based_result_rank.sort(Comparator.comparing(term_based_result::get));
-        for(String docID:term_based_result_rank){
-            System.out.print(ID_Mapping.PageID2URL(docID));
-            System.out.println("    ->Cosine Similarity: "+term_based_result.get(docID));
+            HITS hitsranker = new HITS(manager,term_based_result_rank);
+            HashMap<String,Double> hits_rank_result = hitsranker.rank(0.01);
+            ArrayList<String> hits_based_result_rank = new ArrayList<>(hits_rank_result.keySet());
+            hits_based_result_rank.sort(Comparator.comparing(hits_rank_result::get));
+            Collections.reverse(hits_based_result_rank);
+            for(String docID:hits_based_result_rank){
+                System.out.print(ID_Mapping.PageID2URL(docID));
+                System.out.println("    ->Authority Value: "+hits_rank_result.get(docID));
+            }
         }
+
     }
 }

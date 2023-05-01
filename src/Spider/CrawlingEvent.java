@@ -70,7 +70,7 @@ public class CrawlingEvent {
                         for(URL u:URL_array){
                             if(fetchedURL.add(u)){
                                 unfetchedURL.add(u);
-                                //System.out.println("New unfetched URL: "+u);
+                                System.out.println("New unfetched URL: "+u);
                             }
                         }
 

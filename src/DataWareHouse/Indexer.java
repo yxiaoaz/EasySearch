@@ -35,14 +35,14 @@ public class Indexer {
     public void processContent(URL url) throws IOException {
         /**Step 1: save the URL to the docRecords*/
         // When we reach this stage, the URL is already valid to record
-        System.out.println("Processing new url: "+url);
+        //System.out.println("Processing new url: "+url);
         String docID = ID_Mapping.URL2ID(url);
 
         HTree docRecords = fileManager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
         Date lastModified = url.openConnection().getLastModified()!=0
                 ?new Date(url.openConnection().getLastModified())
                 :new Date(url.openConnection().getDate());
-        System.out.println(lastModified);
+        //System.out.println(lastModified);
         String title = Jsoup.connect(url.toString()).get().title();
         int size = url.openConnection().getContentLength()!=-1
                 ?url.openConnection().getContentLength()
@@ -105,19 +105,19 @@ public class Indexer {
 
         //Get links from document object.
         Elements links = document.select("a[href]");
-        System.out.println("This URL has "+ links.size()+ " childlinks");
+        //System.out.println("This URL has "+ links.size()+ " childlinks");
         for(int i=0;i< links.size();i++){
             //System.out.println(links.get(i).attr("abs:href"));
             try{
                 URL extracted = new URL(links.get(i).attr("abs:href"));
                 //System.out.println("New child link: "+url);
-                if(!extracted.equals(url)){
+                if( !extracted.equals(url)){
                     updateLinkGraph(url,extracted);
                     v_link.add(extracted);
-                    System.out.println("New child link: "+extracted);
+                    //System.out.println("New child link: "+extracted);
                 }
             }catch(IOException e){
-                System.out.println("Exception when updating web graph");
+                continue;
             }
         }
         return v_link;
@@ -171,6 +171,9 @@ public class Indexer {
         child2parent.put(childID,parentList);
     }
 
+    public boolean connectionEstablishable(URL url) throws IOException {
+        return (url.openConnection()!=null && Jsoup.connect(url.toString())!=null && Jsoup.connect(url.toString()).get()!=null );
+    }
     /**Test if a URL is valid for fetching: either it is not recorded, or it is recorded but has a new lastModifiedDate
      * @param url: the target URL
      * @return : true if url is good to process, false otherwise
@@ -185,7 +188,7 @@ public class Indexer {
             Date recordedModifiedDate = docProfile.getLastModified();
 
 
-            if(url.openConnection()==null||Jsoup.connect(url.toString())==null ||Jsoup.connect(url.toString()).get()==null ) //
+            if(!connectionEstablishable(url))
                 return false;
 
             //the last modified date of this page
@@ -239,6 +242,7 @@ public class Indexer {
             if(!foundDoc){
                 IIPosting newPosting = new IIPosting(docID);
                 newPosting.addPosition(position);
+                postingList.add(newPosting);
             }
         }
 

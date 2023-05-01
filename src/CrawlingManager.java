@@ -23,38 +23,38 @@ public class CrawlingManager {
         HTree forwardindex = manager.getIndexFile(FileNameGenerator.getForwardIndexFileName(url)).getFile();
         ArrayList<FIPosting> keywords = (ArrayList<FIPosting>) forwardindex.get(docprofile.getID());
 
-        System.out.println("-----------------------------------------------------");
+        //System.out.println("-----------------------------------------------------");
         file.write("-----------------------------------------------------");
         file.write(System.getProperty("line.separator"));
-        System.out.println("Page Title: "+docprofile.getTitle());
+        //System.out.println("Page Title: "+docprofile.getTitle());
         file.write("Page Title: "+docprofile.getTitle());
         file.write(System.getProperty("line.separator"));
-        System.out.println("URL: "+docprofile.getURLinString());
+        //System.out.println("URL: "+docprofile.getURLinString());
         file.write("URL: "+docprofile.getURLinString());
         file.write(System.getProperty("line.separator"));
-        System.out.println("Last modification date: "+docprofile.getLastModified().toString());
+        //System.out.println("Last modification date: "+docprofile.getLastModified().toString());
         file.write("Last modification date: "+docprofile.getLastModified().toString());
         file.write(System.getProperty("line.separator"));
-        System.out.println("Size of page: "+docprofile.getSize());
+        //System.out.println("Size of page: "+docprofile.getSize());
         file.write("Size of page: "+docprofile.getSize());
         file.write(System.getProperty("line.separator"));
-        System.out.println("Keywords(stemmed) frequency: ");
+        //System.out.println("Keywords(stemmed) frequency: ");
         file.write("Keywords(stemmed) frequency: ");
         file.write(System.getProperty("line.separator"));
         for(int i=0;i<Math.min(10,keywords.size());i++){
-            System.out.println("---- Keyword "+(i+1)+"  "+ID_Mapping.TermID2Term(keywords.get(i).getID())+" [freq: "+keywords.get(i).getOccurence()+"]");
+            //System.out.println("---- Keyword "+(i+1)+"  "+ID_Mapping.TermID2Term(keywords.get(i).getID())+" [freq: "+keywords.get(i).getOccurence()+"]");
             file.write("---- Keyword "+(i+1)+"  "+ID_Mapping.TermID2Term(keywords.get(i).getID())+" [freq: "+keywords.get(i).getOccurence()+"]");
             file.write(System.getProperty("line.separator"));
         }
-        System.out.println("Child links: ");
+        //System.out.println("Child links: ");
         file.write("Child links: ");
         file.write(System.getProperty("line.separator"));
         for(int i=0;i<Math.min(10,childlist.size());i++){
-            System.out.println("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
+            //System.out.println("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
             file.write("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
             file.write(System.getProperty("line.separator"));
         }
-        System.out.println("-----------------------------------------------------");
+        //System.out.println("-----------------------------------------------------");
         file.write("-----------------------------------------------------");
         file.write(System.getProperty("line.separator"));
 
@@ -71,8 +71,9 @@ public class CrawlingManager {
              manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);*/
 
             ArrayList<URL> root = new ArrayList<>();
-            root.add(new URL("https://hkust.edu.hk/"));
-            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(30));
+            //root.add(new URL("https://cse.hkust.edu.hk/"));
+            root.add(new URL("https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm"));
+            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(300));
             phase1.Start();
             for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();
@@ -84,7 +85,7 @@ public class CrawlingManager {
             DocProfile element = (DocProfile) docrecorditerator.next();
 
             FileWriter file = new FileWriter("spider_result.txt");
-            while(count<30 || element!=null){
+            while(count<30 && element!=null){
                 printInfo(element,file);
                 element = (DocProfile) docrecorditerator.next();
                 count++;
