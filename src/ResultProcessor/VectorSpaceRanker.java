@@ -75,7 +75,6 @@ public class VectorSpaceRanker {
                 dotProduct+=weight;
             }
         }
-
         return dotProduct/(Math.sqrt(squareQueryWeights)*Math.sqrt(squareDocWeights));
     }
 }

@@ -9,7 +9,7 @@ public class FileNameGenerator {
     public static final String PARENT2CHILD = "Web Graph Parent as key-";
     public static final String CHILD2PARENT = "Web Graph Child as key-";
 
-    public static final String DOCRECORDS = "Web Page Profile-";
+    public static final String DOCRECORDS = "Web Page Profile";
 
     public static String getInvertedIndexFileName(String term){
         //return INVERTEDINDEX+term.charAt(0);

@@ -14,8 +14,8 @@ public class FileManager {
     }
     public int getNumOfDoc(){return numOfDoc.get();}
     public int getNumOfTerm(){return numOfTerm.get();}
-    public void numDocAddOne(){numOfDoc.set(numOfDoc.get());}
-    public void numTermAddOne(){numOfTerm.set(numOfTerm.get());}
+    public void numDocAddOne(){numOfDoc.set(numOfDoc.get()+1);}
+    public void numTermAddOne(){numOfTerm.set(numOfTerm.get()+1);}
     public void createIndexFile(String name) throws IOException {
         IndexFile newFile = new IndexFile(name,this);
         addIndexFile(name,newFile);
@@ -33,6 +33,11 @@ public class FileManager {
     public void closeAllFiles() throws IOException {
         for(IndexFile i:getAllIndexFiles()){
             i.close();
+        }
+    }
+    public void saveAllFiles() throws IOException {
+        for(IndexFile i:getAllIndexFiles()){
+            i.saveChanges();
         }
     }
     public void addIndexFile(String fileName, IndexFile file){

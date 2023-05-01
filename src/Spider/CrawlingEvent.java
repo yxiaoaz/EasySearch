@@ -62,21 +62,27 @@ public class CrawlingEvent {
         public void run(){
             while(!unfetchedURL.isEmpty() && maxPageToCrawl.get()>0){
                 URL url = unfetchedURL.poll();
-                //System.out.println("Current URL: "+url.toString());
+                System.out.println("Current URL: "+url.toString());
                 try {
                     if(indexer.validURL(url)){
+                        System.out.println("URL valid, proceed");
                         ArrayList<URL> URL_array =  indexer.extractLinks(url);
                         for(URL u:URL_array){
                             if(fetchedURL.add(u)){
                                 unfetchedURL.add(u);
+                                //System.out.println("New unfetched URL: "+u);
                             }
                         }
-                        indexer.processContent(url);
-                        maxPageToCrawl.decrementAndGet();
 
+                        System.out.println("Finished extracting child links");
+                        System.out.println("starts to crawl!!!!!!!!");
+                        indexer.processContent(url);
+                        maxPageToCrawl.set(maxPageToCrawl.get()-1);
+                        System.out.println("Quota left: "+maxPageToCrawl);
+                        fileManager.saveAllFiles();
                     }
                 } catch (IOException e) {
-                    continue;
+                    System.out.println("EXCEPTION in extract links");
                 }
 
 

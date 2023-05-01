@@ -35,11 +35,14 @@ public class Indexer {
     public void processContent(URL url) throws IOException {
         /**Step 1: save the URL to the docRecords*/
         // When we reach this stage, the URL is already valid to record
+        System.out.println("Processing new url: "+url);
         String docID = ID_Mapping.URL2ID(url);
-        HTree docRecords = fileManager.getIndexFile(FileNameGenerator.getDocRecordsName(url)).getFile();
+
+        HTree docRecords = fileManager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
         Date lastModified = url.openConnection().getLastModified()!=0
                 ?new Date(url.openConnection().getLastModified())
                 :new Date(url.openConnection().getDate());
+        System.out.println(lastModified);
         String title = Jsoup.connect(url.toString()).get().title();
         int size = url.openConnection().getContentLength()!=-1
                 ?url.openConnection().getContentLength()
@@ -47,6 +50,9 @@ public class Indexer {
 
         DocProfile profile = new DocProfile(ID_Mapping.URL2ID(url),lastModified,title,size);
         docRecords.put(docID,profile);
+
+        DocProfile test = (DocProfile) docRecords.get(docID);
+        System.out.println("Test: just added webpage title: "+test.getTitle());
 
         /**Step 2: fetch terms and update inverted index & forward index
          *         fetch links and update webgraph+
@@ -82,24 +88,37 @@ public class Indexer {
      * @param url : the link from which child links are extracted
      * @return : the child links of the input url
      * */
-    public ArrayList<URL> extractLinks(URL url) throws IOException  {
+    public ArrayList<URL> extractLinks(URL url) throws IOException {
         ArrayList<URL> v_link = new ArrayList<URL>();
         //Get Document object after parsing the html from given url.
         Document document = Jsoup.connect(url.toString()).get();
+        if(document==null) return new ArrayList<URL>();
+        /**
+        Document document = null;
+        try {
+            document = Jsoup.connect(url.toString()).get();
+        } catch (IOException e) {
+            System.out.println("Exception when calling Jsoup.connect.get()");
+            System.out.println("jsoup.connect is null? "+ (Jsoup.connect(url.toString())==null));
+            System.out.println("jsoup.connect.get is null? "+ (document==null));
+        }*/
 
         //Get links from document object.
         Elements links = document.select("a[href]");
-
+        System.out.println("This URL has "+ links.size()+ " childlinks");
         for(int i=0;i< links.size();i++){
             //System.out.println(links.get(i).attr("abs:href"));
             try{
                 URL extracted = new URL(links.get(i).attr("abs:href"));
-                updateLinkGraph(url,extracted);
-                v_link.add(extracted);
-            }catch(MalformedURLException e){
-                continue;
+                //System.out.println("New child link: "+url);
+                if(!extracted.equals(url)){
+                    updateLinkGraph(url,extracted);
+                    v_link.add(extracted);
+                    System.out.println("New child link: "+extracted);
+                }
+            }catch(IOException e){
+                System.out.println("Exception when updating web graph");
             }
-
         }
         return v_link;
     }
@@ -117,6 +136,9 @@ public class Indexer {
         if(!fileManager.fileExists(supposedChild2ParentGraphName))
             fileManager.createIndexFile(supposedChild2ParentGraphName);
 
+        while(fileManager.getIndexFile(supposedParent2ChildGraphName).getFile()==null && fileManager.getIndexFile(supposedChild2ParentGraphName).getFile()==null){
+
+        }
         HTree parent2child = fileManager.getIndexFile(supposedParent2ChildGraphName).getFile();
         HTree child2parent = fileManager.getIndexFile(supposedChild2ParentGraphName).getFile();
         String parentID = ID_Mapping.URL2ID(parent);
@@ -154,14 +176,17 @@ public class Indexer {
      * @return : true if url is good to process, false otherwise
      * */
     public boolean validURL(URL url) throws IOException {
-        String supposedFileName = FileNameGenerator.getDocRecordsName(url);
-        if(fileManager.fileExists(supposedFileName)==false)
-            fileManager.createIndexFile(supposedFileName);
+        HTree docRecords = fileManager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
+        while(fileManager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile()==null){
 
-        HTree docRecords = fileManager.getIndexFile(supposedFileName).getFile();
+        }
         if(docRecords.get(ID_Mapping.URL2ID(url))!=null){
             DocProfile docProfile = (DocProfile) docRecords.get(ID_Mapping.URL2ID(url));
             Date recordedModifiedDate = docProfile.getLastModified();
+
+
+            if(url.openConnection()==null||Jsoup.connect(url.toString())==null ||Jsoup.connect(url.toString()).get()==null ) //
+                return false;
 
             //the last modified date of this page
             // if ==0, use the "date" field instead
@@ -182,6 +207,9 @@ public class Indexer {
         String supposedFileName = FileNameGenerator.getInvertedIndexFileName(term);
         if(!fileManager.fileExists(supposedFileName))
             fileManager.createIndexFile(supposedFileName);
+        while(fileManager.getIndexFile(supposedFileName).getFile()==null){
+
+        }
         HTree invertedIndex = fileManager.getIndexFile(supposedFileName).getFile();
         String termID = ID_Mapping.Term2ID(term);
         String docID = ID_Mapping.URL2ID(url);
@@ -225,6 +253,9 @@ public class Indexer {
         String supposedFileName = FileNameGenerator.getForwardIndexFileName(url);
         if(!fileManager.fileExists(supposedFileName))
             fileManager.createIndexFile(supposedFileName);
+        while(fileManager.getIndexFile(supposedFileName).getFile()==null){
+
+        }
         HTree forwardIndex = fileManager.getIndexFile(supposedFileName).getFile();
         String termID = ID_Mapping.Term2ID(term);
         String docID = ID_Mapping.URL2ID(url);

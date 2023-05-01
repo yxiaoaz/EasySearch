@@ -14,7 +14,7 @@ import java.lang.Math;
 public class CrawlingManager {
     public FileManager manager;
     public CrawlingManager(FileManager manager){
-       this.manager = manager;
+        this.manager = manager;
     }
     public  void printInfo(DocProfile docprofile,FileWriter file) throws IOException {
         URL url = new URL(docprofile.getURLinString());
@@ -65,13 +65,13 @@ public class CrawlingManager {
              * For simplicity, in this phase there is only one document for each type of file
              * */
             /***manager.createIndexFile(FileNameGenerator.CHILD2PARENT);
-            manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
-            manager.createIndexFile(FileNameGenerator.DOCRECORDS);
-            manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
-            manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);*/
+             manager.createIndexFile(FileNameGenerator.PARENT2CHILD);
+             manager.createIndexFile(FileNameGenerator.DOCRECORDS);
+             manager.createIndexFile(FileNameGenerator.FORWARDINDEX);
+             manager.createIndexFile(FileNameGenerator.INVERTEDINDEX);*/
 
             ArrayList<URL> root = new ArrayList<>();
-            root.add(new URL("http://www.cse.ust.hk"));
+            root.add(new URL("https://hkust.edu.hk/"));
             CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(30));
             phase1.Start();
             for(IndexFile f:manager.getAllIndexFiles()){
