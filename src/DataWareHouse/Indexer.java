@@ -64,6 +64,61 @@ public class Indexer {
             indexDoc(t,url);
         }
 
+        /**Step 3: fetch terms from title and update title inverted index
+         **/
+        String[] titleTerms = title.split(" ");
+        for(int i=0;i<titleTerms.length;i++){
+            String t = titleTerms[i];
+            if(stopStem.isStopWord(t.toLowerCase())||stopStem.stem(t).isBlank())
+                continue;
+            t = stopStem.stem(t);
+            profile.addStemmedTitleTerm(t);
+            indexTitleTerm(t,i,url);
+        }
+
+    }
+
+    public void indexTitleTerm(String term, int position, URL url) throws IOException {
+        String supposedFileName = FileNameGenerator.getTitleInvertedIndexName(term);
+        if(!fileManager.fileExists(supposedFileName))
+            fileManager.createIndexFile(supposedFileName);
+        while(fileManager.getIndexFile(supposedFileName).getFile()==null){
+
+        }
+        HTree titleInvertedIndex = fileManager.getIndexFile(supposedFileName).getFile();
+        String termID = ID_Mapping.Term2ID(term);
+        String docID = ID_Mapping.URL2ID(url);
+
+        // acquire(construct new) corresponding posting list
+        ArrayList<TitleIIPosting> postingList;
+        if(titleInvertedIndex.get(termID)==null){
+            postingList = new ArrayList<>();
+
+            //to be included in a IIPosting: which document, where in the document
+            TitleIIPosting newPosting = new TitleIIPosting(docID);
+            newPosting.addPosition(position);
+            postingList.add(newPosting);
+
+            fileManager.numTitleTermAddOne();
+        }
+        else{
+            postingList = (ArrayList<TitleIIPosting>) titleInvertedIndex.get(termID);
+            boolean foundDoc = false;
+            for(int j = 0;j<postingList.size();j++){
+                if (postingList.get(j).getID().equals(docID)){
+                    postingList.get(j).addPosition(position);
+                    foundDoc = true;
+                    break;
+                }
+            }
+            if(!foundDoc){
+                TitleIIPosting newPosting = new TitleIIPosting(docID);
+                newPosting.addPosition(position);
+                postingList.add(newPosting);
+            }
+        }
+
+        titleInvertedIndex.put(termID,postingList);
     }
 
     /**

@@ -6,17 +6,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class VectorSpaceRanker {
+public class termVectorSpaceRanker {
     private FileManager fileManager;
+    private HashMap<String, Double> result = new HashMap<>();
 
-
-    public VectorSpaceRanker(FileManager manager){fileManager=manager;}
+    public termVectorSpaceRanker(FileManager manager){fileManager=manager;}
 
     /** Return {docID: similarity score} given a query
-     * @param query : the query received
+     * @param query : the query received (STEMMED)
      */
     public HashMap<String, Double> rank(ArrayList<String> query) throws IOException {
-        HashMap<String, Double> result = new HashMap<>();
         /**Obtain all docs that contain terms in query*/
         for(String term:query){
             System.out.println("----Searching for occurence of "+term);
@@ -39,8 +38,20 @@ public class VectorSpaceRanker {
             System.out.println("Doc: "+ID_Mapping.PageID2URL(docID)+" Cosine Sim: "+cosineSim(query,docID));
         }
 
+        result = normalizeResult(result);
 
         return result;
+    }
+
+    private HashMap<String, Double> normalizeResult(HashMap<String, Double> originalResult){
+        double sum = 0.0;
+        for(Double score: originalResult.values()){
+            sum+=score;
+        }
+        for(String docID: originalResult.keySet()){
+            originalResult.put(docID, originalResult.get(docID)/sum);
+        }
+        return originalResult;
     }
 
     /**Get the weigh of a {term,doc} entry based on TF*IDF/max(TF)

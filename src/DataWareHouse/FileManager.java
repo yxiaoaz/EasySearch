@@ -9,6 +9,7 @@ public class FileManager {
     private HashMap<String, IndexFile> fileRecords;
     private AtomicInteger numOfDoc=new AtomicInteger();
     private AtomicInteger numOfTerm=new AtomicInteger();
+    private AtomicInteger numOfTitleTerm=new AtomicInteger();
     public FileManager(){
         fileRecords = new HashMap<>();
     }
@@ -16,6 +17,7 @@ public class FileManager {
     public int getNumOfTerm(){return numOfTerm.get();}
     public void numDocAddOne(){numOfDoc.set(numOfDoc.get()+1);}
     public void numTermAddOne(){numOfTerm.set(numOfTerm.get()+1);}
+    public void numTitleTermAddOne(){numOfTitleTerm.set(numOfTitleTerm.get()+1);}
     public void createIndexFile(String name) throws IOException {
         IndexFile newFile = new IndexFile(name,this);
         addIndexFile(name,newFile);

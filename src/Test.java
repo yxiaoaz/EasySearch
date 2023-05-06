@@ -3,7 +3,8 @@ import DataWareHouse.FileNameGenerator;
 import DataWareHouse.ID_Mapping;
 import IRUtilities.StopStem;
 import ResultProcessor.HITS;
-import ResultProcessor.VectorSpaceRanker;
+import ResultProcessor.termTitleRanker;
+import ResultProcessor.termVectorSpaceRanker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,17 +66,21 @@ public class Test {
             ArrayList<String> query = splitQuery(querylist);
             //for(String s:query){System.out.println(s);}
             System.out.println("Starts searching");
-            VectorSpaceRanker vectorSpaceRanker = new VectorSpaceRanker(manager);
             query = processQuery(query);
 
 
-            HashMap<String,Double> term_based_result = vectorSpaceRanker.rank(query);
+            /**termVectorSpaceRanker vectorSpaceRanker = new termVectorSpaceRanker(manager);
+             * HashMap<String,Double> term_based_result = vectorSpaceRanker.rank(query);
+             * */
+            termTitleRanker titleRanker = new termTitleRanker(manager);
+            HashMap<String,Double> term_based_result = titleRanker.rank(query);
+
             ArrayList<String> term_based_result_rank = new ArrayList<>(term_based_result.keySet());
             term_based_result_rank.sort(Comparator.comparing(term_based_result::get));
             Collections.reverse(term_based_result_rank);
             for(String docID:term_based_result_rank){
                 System.out.print(ID_Mapping.PageID2URL(docID));
-                System.out.println("    ->Cosine Similarity: "+term_based_result.get(docID));
+                System.out.println("    ->Normalized Cosine Similarity: "+term_based_result.get(docID));
             }
 
             HITS hitsranker = new HITS(manager,term_based_result_rank);

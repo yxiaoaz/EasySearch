@@ -49,11 +49,14 @@ public class CrawlingManager {
         //System.out.println("Child links: ");
         file.write("Child links: ");
         file.write(System.getProperty("line.separator"));
-        for(int i=0;i<Math.min(10,childlist.size());i++){
-            //System.out.println("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
-            file.write("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
-            file.write(System.getProperty("line.separator"));
+        if(childlist!=null){
+            for(int i=0;i<Math.min(10,childlist.size());i++){
+                //System.out.println("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
+                file.write("---- Child Link "+(i+1)+" : "+ID_Mapping.PageID2URL(childlist.get(i)).toString());
+                file.write(System.getProperty("line.separator"));
+            }
         }
+
         //System.out.println("-----------------------------------------------------");
         file.write("-----------------------------------------------------");
         file.write(System.getProperty("line.separator"));
@@ -73,7 +76,7 @@ public class CrawlingManager {
             ArrayList<URL> root = new ArrayList<>();
             //root.add(new URL("https://cse.hkust.edu.hk/"));
             root.add(new URL("https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm"));
-            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(300));
+            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(20));
             phase1.Start();
             for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();

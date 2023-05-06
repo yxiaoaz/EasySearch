@@ -8,7 +8,7 @@ public class FileNameGenerator {
     public static final String FORWARDINDEX = "Forward-";
     public static final String PARENT2CHILD = "Web Graph Parent as key-";
     public static final String CHILD2PARENT = "Web Graph Child as key-";
-
+    public static final String TITLEINVERTEDINDEX = "Title Inverted Index-";
     public static final String DOCRECORDS = "Web Page Profile";
 
     public static String getInvertedIndexFileName(String term){
@@ -38,6 +38,9 @@ public class FileNameGenerator {
     }
     public static String getWebGraphName_child2parent(String docID) throws MalformedURLException {
         return getWebGraphName_child2parent(ID_Mapping.PageID2URL(docID));
+    }
+    public static String getTitleInvertedIndexName(String term){
+        return TITLEINVERTEDINDEX;
     }
 
     public static String getDocRecordsName(URL url){

@@ -27,7 +27,7 @@ public class HITS {
     /**Given a ranked result from VectorSpaceRanker, expand the root set by including their parents and children*/
     private void expandRootSet() throws IOException {
         for(int i=0;i< rootsetsize;i++)
-        {
+        {   System.out.println("For "+ID_Mapping.PageID2URL(subgraph.get(i))+" in subgraph: ");
             String docID = subgraph.get(i);
             HTree parent2child = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_parent2child(docID)).getFile();
             HTree child2parent = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_child2parent(docID)).getFile();
@@ -39,12 +39,14 @@ public class HITS {
                 for (String child:children){
                     if(!subgraph.contains(child))
                         subgraph.add(child);
+                        System.out.println("---Added webpage: "+ID_Mapping.PageID2URL(child));
                 }
             }
             if(parents!=null) {
                 for (String parent : parents) {
                     if (!subgraph.contains(parent))
                         subgraph.add(parent);
+                        System.out.println("---Added webpage: "+ID_Mapping.PageID2URL(parent));
                 }
             }
         }
@@ -71,9 +73,9 @@ public class HITS {
             }
             for (String docID: subgraph){ /** NORMALIZE authority of each doc*/
 
-                if(docID.equals(experiment)){System.out.print("computed auth: " + Authority.get(docID) + "   ->>  ");}
+                //if(docID.equals(experiment)){System.out.print("computed auth: " + Authority.get(docID) + "   ->>  ");}
                 Authority.put(docID, Authority.get(docID) / authSum); //normalize
-                if(docID.equals(experiment)){System.out.println("normalized auth: divide by " + authSum + " = " + Authority.get(docID));}
+                //if(docID.equals(experiment)){System.out.println("normalized auth: divide by " + authSum + " = " + Authority.get(docID));}
 
                 if(Math.abs(Authority.get(docID)-oldauth.get(docID))>threshold) {
                     //System.out.println(Math.abs(Hub.get(docID)-oldhub));
@@ -86,9 +88,9 @@ public class HITS {
                 hubSum += Hub.get(docID);
             }
             for(String docID:subgraph) {/** NORMALIZE hub of each doc*/
-                if(docID.equals(experiment)){System.out.print("computed hub: "+Hub.get(docID)+"   ->>  ");}
+                //if(docID.equals(experiment)){System.out.print("computed hub: "+Hub.get(docID)+"   ->>  ");}
                 Hub.put(docID,Hub.get(docID)/hubSum);
-                if(docID.equals(experiment)){System.out.println("normalized hub: divide by "+hubSum+" = "+Hub.get(docID));}
+                //if(docID.equals(experiment)){System.out.println("normalized hub: divide by "+hubSum+" = "+Hub.get(docID));}
 
                 if(Math.abs(Hub.get(docID)-oldhub.get(docID))>threshold){
                     //System.out.println(Math.abs(Hub.get(docID)-oldhub));
@@ -101,18 +103,18 @@ public class HITS {
         return Authority;
     }
     private void updateAuth(String docID) throws IOException {
-        String experiment = ID_Mapping.URL2ID(new URL("https://www.cse.ust.hk/~kwtleung/COMP4321/Movie.htm"));
+        //String experiment = ID_Mapping.URL2ID(new URL("https://www.cse.ust.hk/~kwtleung/COMP4321/Movie.htm"));
         HTree child2parent = fileManager.getIndexFile(FileNameGenerator.getWebGraphName_child2parent(docID)).getFile();
         ArrayList<String> parents = (ArrayList<String>)child2parent.get(docID);
 
         double newAuth = 0.0;
         if(parents==null) return;
-        if(docID.equals(experiment)) {System.out.println("Updating AUTH");}
+        //if(docID.equals(experiment)) {System.out.println("Updating AUTH");}
         for(String parent:parents){
             if(!subgraph.contains(parent)) continue;
-            if(docID.equals(experiment)) {System.out.println("---Aggregate HUB value from parent: "+ID_Mapping.PageID2URL(parent));}
+            //if(docID.equals(experiment)) {System.out.println("---Aggregate HUB value from parent: "+ID_Mapping.PageID2URL(parent));}
             newAuth+=Hub.get(parent);
-            if(docID.equals(experiment)) {System.out.println("---Added by : "+Hub.get(parent)+" = "+newAuth);}
+            //if(docID.equals(experiment)) {System.out.println("---Added by : "+Hub.get(parent)+" = "+newAuth);}
         }
         Authority.put(docID,newAuth);
     }
