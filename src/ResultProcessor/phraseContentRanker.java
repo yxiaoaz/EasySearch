@@ -1,8 +1,5 @@
 package ResultProcessor;
-import DataWareHouse.FileManager;
-import DataWareHouse.FileNameGenerator;
-import DataWareHouse.ID_Mapping;
-import DataWareHouse.IIPosting;
+import DataWareHouse.*;
 import jdbm.htree.HTree;
 
 import java.io.IOException;
@@ -10,22 +7,56 @@ import java.util.*;
 public class phraseContentRanker {
     private ArrayList<String> query;
     private FileManager fileManager;
-    private int threshold;
     private HashMap<String, Double> result;
-    public phraseContentRanker(FileManager manager, ArrayList<String> query,int threshold ){
+    public phraseContentRanker(FileManager manager, ArrayList<String> query){
         fileManager=manager;
         this.query = query;
-        this.threshold = threshold;
         result = new HashMap<>();
     }
 
     public HashMap<String, Double> rank() throws IOException {
-        HashSet<String> allDocs = new HashSet<>();
+        System.out.println("---------------------Phrase Ranking-------------------------");
+        System.out.println("------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------");
+        System.out.print("Phrase content ranker task received: ");
+        for(String q:query){
+            System.out.print(q+" ---- ");
+        }System.out.println();
+        for(String mergedPhrase: query){
+            System.out.println("--Decomposing phrase: "+mergedPhrase);
 
+            String[] tempphrase = mergedPhrase.split(" ");
+            ArrayList<String> phrase = new ArrayList<>();
+            for(int i=0;i< tempphrase.length;i++){
+                phrase.add(tempphrase[i]);
+            }
+            HashSet<String> relatedDocs = new HashSet<>();
+
+            for(String term:phrase){
+                System.out.println("----Compositing term: "+term);
+                ArrayList<IIPosting> IIPostingList = (ArrayList<IIPosting>)fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile().get(ID_Mapping.Term2ID(term));
+                if(IIPostingList==null) continue;
+                for(IIPosting posting: IIPostingList){
+                    System.out.println("--------This term is found in : "+ID_Mapping.PageID2URL(posting.getID()));
+                    relatedDocs.add(posting.getID());
+                }
+            }
+            for(String docID: relatedDocs){
+                if(result.containsKey(docID))
+                    result.put(docID, result.get(docID)+calcScore(phrase, docID));
+                else
+                    result.put(docID, calcScore(phrase, docID));
+            }
+        }
+        result = normalizeResult(result);
+        System.out.println("------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------");
         return result;
     }
 
-    /** Calculate the score of a single document againts a single phrase query
+    /** Calculate the score of a single document against a single phrase query
+     * @param phrase : a list of composed terms of a phrase (some terms may occur more than once)
      * */
     public Double calcScore(ArrayList<String> phrase, String docID) throws IOException {
         HashMap<Integer, String> position2term = new HashMap<>();
@@ -79,7 +110,7 @@ public class phraseContentRanker {
             //term[i] contained in tempWindow
             // compare dist(term[i], tempWindow(last)) & dist(pastoccurence, pastoccurence+1)
             else if(tempWindow.contains(position2term.get(orderedPosition.get(i)))){
-                int duplicateOccurenceIndex = tempWindow.indexOf(position2term.get(orderedPosition.get(i+1)));
+                int duplicateOccurenceIndex = tempWindow.indexOf(position2term.get(orderedPosition.get(i)));
                 // break between tempWindow(last) and term[i]
                 if((orderedPosition.get(i)-orderedPosition.get(i-1)) >=
                         orderedPosition.get(duplicateOccurenceIndex+1) - orderedPosition.get(duplicateOccurenceIndex)){
@@ -97,6 +128,8 @@ public class phraseContentRanker {
                     for(int j=0;j<duplicateOccurenceIndex+1;j++){
                         lookbackWindow.add(tempWindow.get(j));
                         intervallookbackWindow.add(tempInterval.get(j));
+                    }
+                    for(int j=0;j<duplicateOccurenceIndex+1;j++){
                         tempWindow.remove(j);
                         tempInterval.remove(j);
                     }
@@ -118,11 +151,53 @@ public class phraseContentRanker {
                 windows.add(new ArrayList<>(tempWindow));
                 interval.add(new ArrayList<>(tempInterval));
             }
-
         }
 
+        /**Assign weights for each window
+         * Window Weight = [1+ num of terms in window/len(window)]^x, let x = 1.5    <---if num of terms>1
+         *                  0  <---otherwise
+         * */
+        ArrayList<Double> windowWeights = new ArrayList<>();
+        for(int i=0;i<windows.size();i++){
+            if(windows.get(i).size()<=1){
+                windowWeights.add(0.0);
+                continue;
+            }
+            windowWeights.add(Math.pow(1+windows.get(i).size()/(interval.get(i).get(interval.get(i).size()-1)-interval.get(i).get(0)+1),1.5));
+        }
 
-        return 0.0;
+        /**Calculate the weights of each term in the document*/
+        HashMap<String, Double> termweights = new HashMap<>();
+        for(String term: position2term.values()){
+            ArrayList<IIPosting> IIPostingList = (ArrayList<IIPosting>)fileManager.getIndexFile(FileNameGenerator.getInvertedIndexFileName(term)).getFile().get(ID_Mapping.Term2ID(term));
+            double DF = IIPostingList.size();
+            double IDF = Math.log(fileManager.getNumOfDoc()/DF)/Math.log(2);
+            double weight = 0;
+            for(int i=0;i<windows.size();i++){
+                if(windows.get(i).contains(term)){
+                    weight+=IDF*windowWeights.get(i);
+                }
+            }
+            if(termweights.containsKey(term)) termweights.put(term,termweights.get(term)+weight);
+            else termweights.put(term,weight);
+        }
+
+        double sum = 0;
+        for(String term: termweights.keySet()){
+            sum+=termweights.get(term);
+        }
+
+        return sum;
+    }
+    private HashMap<String, Double> normalizeResult(HashMap<String, Double> originalResult){
+        double sum = 0.0;
+        for(Double score: originalResult.values()){
+            sum+=score;
+        }
+        for(String docID: originalResult.keySet()){
+            originalResult.put(docID, originalResult.get(docID)/sum);
+        }
+        return originalResult;
     }
 
     /**
@@ -142,7 +217,7 @@ public class phraseContentRanker {
                 break;
             }
         }
-
+        if(doc==null) return null;
         return doc.getPositions();
     }
 }

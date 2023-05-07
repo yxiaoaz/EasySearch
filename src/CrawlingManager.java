@@ -76,7 +76,7 @@ public class CrawlingManager {
             ArrayList<URL> root = new ArrayList<>();
             //root.add(new URL("https://cse.hkust.edu.hk/"));
             root.add(new URL("https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm"));
-            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(20));
+            CrawlingEvent phase1 = new CrawlingEvent(root,manager,1,new AtomicInteger(300));
             phase1.Start();
             for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();

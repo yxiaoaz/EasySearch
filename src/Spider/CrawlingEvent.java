@@ -70,12 +70,12 @@ public class CrawlingEvent {
                         for(URL u:URL_array){
                             if(fetchedURL.add(u)){
                                 unfetchedURL.add(u);
-                                System.out.println("New unfetched URL: "+u);
+                                //System.out.println("New unfetched URL: "+u);
                             }
                         }
 
-                        System.out.println("Finished extracting child links");
-                        System.out.println("starts to crawl!!!!!!!!");
+                        //System.out.println("Finished extracting child links");
+                        //System.out.println("starts to crawl!!!!!!!!");
                         indexer.processContent(url);
                         maxPageToCrawl.set(maxPageToCrawl.get()-1);
                         System.out.println("Quota left: "+maxPageToCrawl);

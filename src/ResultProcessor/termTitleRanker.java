@@ -14,6 +14,10 @@ public class termTitleRanker {
         fileManager = manager;
     }
     public HashMap<String, Double> rank(ArrayList<String> query) throws IOException {
+        System.out.println("---------------------Title  Ranking-------------------------");
+        System.out.println("------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------");
+
         /**Obtain all docs that contain terms in query*/
         for(String term:query){
             System.out.println("----Searching for occurence of "+term);
