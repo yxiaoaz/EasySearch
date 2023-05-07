@@ -23,4 +23,5 @@ public class IIPosting extends Posting {
     public void addPosition(int position){
         positions.add(position);
     }
+    public ArrayList<Integer> getPositions(){return positions;}
 }

@@ -4,7 +4,7 @@ import DataWareHouse.ID_Mapping;
 import IRUtilities.StopStem;
 import ResultProcessor.HITS;
 import ResultProcessor.termTitleRanker;
-import ResultProcessor.termVectorSpaceRanker;
+import ResultProcessor.termContentRanker;
 
 import java.io.BufferedReader;
 import java.io.IOException;

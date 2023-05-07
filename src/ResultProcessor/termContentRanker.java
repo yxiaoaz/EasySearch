@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class termVectorSpaceRanker {
+public class termContentRanker {
     private FileManager fileManager;
     private HashMap<String, Double> result = new HashMap<>();
 
-    public termVectorSpaceRanker(FileManager manager){fileManager=manager;}
+    public termContentRanker(FileManager manager){fileManager=manager;}
 
     /** Return {docID: similarity score} given a query
      * @param query : the query received (STEMMED)

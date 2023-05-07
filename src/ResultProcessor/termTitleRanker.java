@@ -6,7 +6,7 @@ import java.util.*;
 import DataWareHouse.*;
 import jdbm.htree.HTree;
 
-//FileNameGenerator.DOCRECORDS
+
 public class termTitleRanker {
     private FileManager fileManager;
     private HashMap<String, Double> result = new HashMap<>();
