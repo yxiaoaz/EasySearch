@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.io.File;
 
 public class Test {
     public static final double term_score_weight = 0.2;
@@ -81,13 +82,23 @@ public class Test {
         return processedQueries;
     }
     public static void main(String[] args) throws IOException {
-        FileManager manager = new FileManager();
-        manager.createIndexFile(FileNameGenerator.DOCRECORDS);
-        CrawlingManager cm = new CrawlingManager(manager);
-        long startTime = System.nanoTime();
-        cm.crawlOnce();
-        long endTime = System.nanoTime();
-        System.out.println("Crawling took "+((endTime-startTime)/1000000000)+" seconds");
+        FileManager manager;
+
+        File f = new File("record_manager_IDs.txt");
+        if(!f.exists()) {
+            manager = new FileManager();
+            manager.createIndexFile(FileNameGenerator.DOCRECORDS);
+            CrawlingManager cm = new CrawlingManager(manager);
+            long startTime = System.nanoTime();
+            cm.crawlOnce();
+            long endTime = System.nanoTime();
+            System.out.println("Crawling took "+((endTime-startTime)/1000000000)+" seconds");
+        }
+        else{
+            System.out.println("LOAD EXISTING DATA");
+            manager = new FileManager("record_manager_IDs.txt");
+        }
+
         while(true){
             System.out.println("Please input query");
             String[] querylist = new BufferedReader(new InputStreamReader(System.in)).readLine().split(" ");//{"research","graduate","HKUST","science","education"};

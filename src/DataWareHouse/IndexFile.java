@@ -16,6 +16,8 @@ public class IndexFile {
     *Create a database with specified record manager name
     *For simplicity, the Database shares the same name.
     **/
+
+    /**Create a new index file for the first time*/
     public IndexFile(String name, FileManager fileManager) throws IOException {
         this.name = name;
         this.recman = RecordManagerFactory.createRecordManager(name);
@@ -24,14 +26,21 @@ public class IndexFile {
 
         this.fileManager = fileManager;
     }
+    /**Create a new index file for an existed HTree*/
+    public IndexFile(String name, FileManager fileManager, long recid) throws IOException {
+        this.name = name;
+        this.recman = RecordManagerFactory.createRecordManager(name);
+        file = HTree.load(recman, recid);
+        this.fileManager = fileManager;
+    }
+    public long getRecmanID(){
+        return this.file.getRecid();
+    }
     public void saveChanges() throws IOException {
         recman.commit();
     }
     public void close() throws IOException {
         recman.close();
-    }
-    public String getName(){
-        return name;
     }
     public HTree getFile(){
         return file;

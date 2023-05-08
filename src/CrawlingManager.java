@@ -81,6 +81,7 @@ public class CrawlingManager {
             for(IndexFile f:manager.getAllIndexFiles()){
                 f.saveChanges();
             }
+            manager.storeRecmanID("record_manager_IDs.txt");
 
             HTree docrecord = manager.getIndexFile(FileNameGenerator.DOCRECORDS).getFile();
             FastIterator docrecorditerator = docrecord.values();
@@ -99,5 +100,6 @@ public class CrawlingManager {
         } catch (IOException x) {
             throw new RuntimeException(x);
         }
+
     }
 }
