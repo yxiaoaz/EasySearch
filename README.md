@@ -94,7 +94,7 @@ and assuming that the weight for each term in the query is 1. Considering that t
 similar to the length of the query in general, no normalization is applied to
 save recording.
 
-#### 3 Similarity of Webpage Content Term vs. Phrase in Query (Apply for Bonus)
+#### 3 Similarity of Webpage Content Term vs. Phrase in Query
 
 Comparing with single terms which are usually discrete, it is assumed that
 when users input phrases, they are more confident that the terms in the
@@ -126,7 +126,7 @@ we scan through each occurrence of$p \in phr$in$D$following natural order.
 We try to divide the chain of occurrences into non-overlapping windows,
 each of which containing at most 1 term from$phr$.
 
-When a new occurrence of a term in$phr$is discovered, there are 4 possible
+When a new occurrence of a term in $phr$ is discovered, there are 4 possible
 cases:
 - The distance between this occurrence and the last processed
 occurrence is farther than a threshold$MAX\_DIST$. Then we end the
@@ -148,7 +148,7 @@ calculation. Intuitively, the formula gives higher weights to terms that reside
 together with more other terms in the phrase simultaneously in more
 windows.
 
-#### 4 Score from Link Structure Mining (Apply for Bonus)
+#### 4 Score from Link Structure Mining
 
 After collecting all the webpages with non-zero scores in the previously
 defined measures as the root set, we apply the HITS algorithm to collect the
