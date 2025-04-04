@@ -122,7 +122,7 @@ Here, $window(t, phr, D)$ is a collection of excerpts (windows) in $D$ where $t$
 
 The rule for constructing the windows is borrowed from Song & Wen
 (2005). Given a phrase $phr = \set{p_1, p_2, \dots }$ and a webpage $D = \set{d_1, d_2, \dots }$,
-we scan through each occurrence of$p \in phr$in$D$following natural order.
+we scan through each occurrence of $p \in phr$ in $D$ following natural order.
 We try to divide the chain of occurrences into non-overlapping windows,
 each of which containing at most 1 term from$phr$.
 
