@@ -40,7 +40,7 @@ The program transforms query input into several types of input and deliver them 
 This part will focus on the ranking algorithm, which is based on a probability measure that
 is based on the similarity of (a) a document’s content to terms in a query, (b) a
 document’s title to terms in a query, and (c) a document’s content to phrases in a query.
-Denote a webpage as $D = {d_1, d_2, \dots }$ where $d_i$is a term (after stopword removal and
+Denote a webpage as $D = {d_1, d_2, \dots }$ where $d_i$ is a term (after stopword removal and
 stemming) in the webpage content. Denote $D_{title} = \set{d_{t1}, d_{t2}, \dots }$ as the terms in the title
 of $D$. Denote a query as $Q = \set{t_1, t_2, \dots , ph_1, ph_2, \dots }$ where $t_i$ and $ph_i$ are terms and
 phrases in the query, and we split it into $Q_{term} = \set{ t_i | t_i \in Q }$ and $Q_{phrase} = \set{ ph_i | ph_i \in Q }$.
