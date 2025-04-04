@@ -118,7 +118,7 @@ $$
 w(t, phr, D) = \sum_{win \in window(t, phr, D)} (1 + \frac{n_{win}}{len(win)})^{\frac{3}{2}}
 $$
 
-Here, $window(t, phr, D)$ is a collection of excerpts (windows) in $D$ where $t$, the constituent of phrase $phr$, resides in. $n_{win}$ is the number of constituent terms of $phr$ that the window$win$contains, and $len(win)$ is the number of terms in$win$.
+Here, $window(t, phr, D)$ is a collection of excerpts (windows) in $D$ where $t$, the constituent of phrase $phr$, resides in. $n_{win}$ is the number of constituent terms of $phr$ that the window$win$contains, and $len(win)$ is the number of terms in $win$.
 
 The rule for constructing the windows is borrowed from Song & Wen
 (2005). Given a phrase $phr = \set{p_1, p_2, \dots }$ and a webpage $D = \set{d_1, d_2, \dots }$,
