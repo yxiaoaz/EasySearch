@@ -124,12 +124,12 @@ The rule for constructing the windows is borrowed from Song & Wen
 (2005). Given a phrase $phr = \set{p_1, p_2, \dots }$ and a webpage $D = \set{d_1, d_2, \dots }$,
 we scan through each occurrence of $p \in phr$ in $D$ following natural order.
 We try to divide the chain of occurrences into non-overlapping windows,
-each of which containing at most 1 term from$phr$.
+each of which containing at most 1 term from $phr$.
 
 When a new occurrence of a term in $phr$ is discovered, there are 4 possible
 cases:
 - The distance between this occurrence and the last processed
-occurrence is farther than a threshold$MAX\_DIST$. Then we end the
+occurrence is farther than a threshold $MAXDIST$. Then we end the
 current window, and start a new window with the new occurrence
 as the first record;
 - The next occurrence is the same term as the last occurrence. Then
@@ -142,7 +142,7 @@ the last duplicate occurrence and its next element.
 - Otherwise, add the next occurrence to the current window and
 move on.
 
-In the program, $MAX\_DIST$ is set as 2 times the length of the phrase
+In the program, $MAXDIST$ is set as 2 times the length of the phrase
 query. It is obvious that$w(t, phr, D)$has a similar position as the TF term in
 calculation. Intuitively, the formula gives higher weights to terms that reside
 together with more other terms in the phrase simultaneously in more
